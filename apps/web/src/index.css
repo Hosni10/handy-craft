@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties (shadcn/ui) ───────────────────────────────────── */
+@layer base {
+  :root {
+    /* Warm artisan light theme */
+    --background: 36 30% 97%;
+    --foreground: 20 20% 15%;
+
+    --card: 36 25% 98%;
+    --card-foreground: 20 20% 15%;
+
+    --popover: 36 25% 98%;
+    --popover-foreground: 20 20% 15%;
+
+    /* Terracotta primary */
+    --primary: 15 60% 47%;
+    --primary-foreground: 36 30% 97%;
+
+    /* Sand secondary */
+    --secondary: 40 55% 47%;
+    --secondary-foreground: 36 30% 97%;
+
+    --muted: 36 15% 92%;
+    --muted-foreground: 20 10% 45%;
+
+    /* Olive accent */
+    --accent: 80 40% 34%;
+    --accent-foreground: 36 30% 97%;
+
+    --destructive: 0 75% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 36 15% 86%;
+    --input: 36 15% 86%;
+    --ring: 15 60% 47%;
+
+    --radius: 0.625rem;
+  }
+}
+
+/* ─── RTL global fixes ────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    direction: rtl;
+    text-align: right;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Ensure all form inputs and icons respect RTL */
+  input,
+  textarea,
+  select {
+    direction: rtl;
+    text-align: right;
+  }
+
+  /* Compensate for directional utility classes that don't auto-flip */
+  [dir='rtl'] .rtl-flip {
+    transform: scaleX(-1);
+  }
+}
+
+/* ─── Skeleton loading animation ──────────────────────────────────────────── */
+@layer components {
+  .skeleton {
+    @apply bg-gradient-to-l from-muted via-muted/50 to-muted bg-[length:200%_100%] animate-shimmer rounded-md;
+  }
+}
+
+/* ─── Arabic number display ───────────────────────────────────────────────── */
+@layer utilities {
+  .num-ar {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+}

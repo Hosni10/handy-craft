@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { ok } from '../lib/response.js';
+
+const router = Router();
+
+router.get('/', (_req, res) => {
+  ok(res, { status: 'ok', timestamp: new Date().toISOString() });
+});
+
+export default router;
