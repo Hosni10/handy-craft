@@ -353,31 +353,17 @@ async function main() {
   const categoryMap: Record<string, string> = {};
 
   for (const cat of ROOT_CATEGORIES) {
-    const created = await prisma.category.upsert({
-      where: { id: cat.nameAr }, // use nameAr as temp id — overridden below
-      update: {},
-      create: { nameAr: cat.nameAr, image: cat.image },
-    }).catch(async () =>
-      // upsert by name not supported directly — find or create
-      prisma.category.findFirst({ where: { nameAr: cat.nameAr, parentId: null } }).then(async (existing) => {
-        if (existing) return existing;
-        return prisma.category.create({ data: { nameAr: cat.nameAr, image: cat.image } });
-      })
-    );
-    categoryMap[cat.nameAr] = created.id;
-  }
-
-  // Re-create correctly without id conflict
-  // Simpler: just find-or-create
-  const allRootCats = await prisma.category.findMany({ where: { parentId: null } });
-  for (const cat of ROOT_CATEGORIES) {
-    const exists = allRootCats.find((c) => c.nameAr === cat.nameAr);
-    if (!exists) {
-      const created = await prisma.category.create({ data: { nameAr: cat.nameAr, image: cat.image } });
-      categoryMap[cat.nameAr] = created.id;
-    } else {
-      categoryMap[cat.nameAr] = exists.id;
+    const existing = await prisma.category.findFirst({
+      where: { nameAr: cat.nameAr, parentId: null },
+    });
+    if (existing) {
+      categoryMap[cat.nameAr] = existing.id;
+      continue;
     }
+    const created = await prisma.category.create({
+      data: { nameAr: cat.nameAr, image: cat.image },
+    });
+    categoryMap[cat.nameAr] = created.id;
   }
 
   // Sub-categories

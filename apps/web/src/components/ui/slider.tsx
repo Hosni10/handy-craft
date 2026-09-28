@@ -14,47 +14,55 @@ interface SliderProps {
   className?: string;
 }
 
+const thumbClass =
+  'pointer-events-none absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent ' +
+  '[&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 ' +
+  '[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full ' +
+  '[&::-webkit-slider-thumb]:bg-terracotta-500 [&::-webkit-slider-thumb]:shadow ' +
+  '[&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 ' +
+  '[&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 ' +
+  '[&::-moz-range-thumb]:bg-terracotta-500';
+
 export function Slider({ min, max, value, onChange, step = 50, className }: SliderProps) {
   const [low, high] = value;
+  const span = Math.max(max - min, 1);
+  const lowPct = ((low - min) / span) * 100;
+  const highPct = ((high - min) / span) * 100;
 
   return (
     <div className={cn('relative flex flex-col gap-2', className)}>
-      <div className="relative h-2 w-full">
-        {/* Track */}
-        <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-muted" />
-        {/* Active range */}
+      <div className="relative h-4 w-full">
+        <div className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-muted" />
+        {/* Page is RTL, so 0 is on the right. Inset the fill from that edge. */}
         <div
-          className="absolute inset-y-0 rounded-full bg-terracotta-400"
-          style={{
-            left: `${((low - min) / (max - min)) * 100}%`,
-            right: `${((max - high) / (max - min)) * 100}%`,
-          }}
+          className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-terracotta-400"
+          style={{ right: `${lowPct}%`, left: `${100 - highPct}%` }}
         />
-        {/* Low thumb */}
         <input
           type="range"
           min={min}
           max={max}
           step={step}
           value={low}
+          aria-label="الحد الأدنى للسعر"
           onChange={(e) => {
-            const v = Number(e.target.value);
-            if (v <= high) onChange([v, high]);
+            const next = Math.min(Number(e.target.value), high);
+            onChange([next, high]);
           }}
-          className="absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-terracotta-500 [&::-webkit-slider-thumb]:shadow"
+          className={cn(thumbClass, high - low <= step ? 'z-30' : 'z-10')}
         />
-        {/* High thumb */}
         <input
           type="range"
           min={min}
           max={max}
           step={step}
           value={high}
+          aria-label="الحد الأقصى للسعر"
           onChange={(e) => {
-            const v = Number(e.target.value);
-            if (v >= low) onChange([low, v]);
+            const next = Math.max(Number(e.target.value), low);
+            onChange([low, next]);
           }}
-          className="absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-terracotta-500 [&::-webkit-slider-thumb]:shadow"
+          className={cn(thumbClass, high - low <= step ? 'z-10' : 'z-20')}
         />
       </div>
     </div>

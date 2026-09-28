@@ -34,7 +34,7 @@ export function VerifiedArtisansSection({ stores, isLoading = false }: VerifiedA
           <h2 className="text-lg sm:text-xl font-bold">حرفيون موثوقون</h2>
           <Link to="/stores" className="flex items-center gap-1 text-sm text-terracotta-500 hover:underline">
             كل المتاجر
-            <ArrowLeft className="h-4 w-4 rtl-flip" />
+            <ArrowLeft className="h-4 w-4" />
           </Link>
         </div>
 

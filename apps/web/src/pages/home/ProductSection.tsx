@@ -26,7 +26,7 @@ export function ProductSection({
           className="flex items-center gap-1 text-sm text-terracotta-500 hover:underline"
         >
           عرض الكل
-          <ArrowLeft className="h-4 w-4 rtl-flip" />
+          <ArrowLeft className="h-4 w-4" />
         </Link>
       </div>
 
