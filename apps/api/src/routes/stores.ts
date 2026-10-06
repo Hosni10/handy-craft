@@ -3,6 +3,7 @@ import { storeController } from '../controllers/store.controller.js';
 
 const router = Router();
 
+router.get('/', (req, res, next) => storeController.list(req, res).catch(next));
 router.get('/verified', (req, res, next) => storeController.verified(req, res).catch(next));
 router.get('/:id/reviews', (req, res, next) => storeController.reviews(req, res).catch(next));
 router.get('/:id/products', (req, res, next) => storeController.products(req, res).catch(next));

@@ -1,4 +1,4 @@
-import type { OrderStatus } from '@craftsouq/shared';
+import type { OrderStatus } from '@handycraft/shared';
 import { CheckCircle2, Circle, Package, Truck, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

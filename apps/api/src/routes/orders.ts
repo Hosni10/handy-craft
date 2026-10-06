@@ -6,8 +6,10 @@ import {
   confirmCodOtpSchema,
   createReviewSchema,
   shippingQuoteQuerySchema,
-} from '@craftsouq/shared';
+  openDisputeSchema,
+} from '@handycraft/shared';
 import { orderController } from '../controllers/order.controller.js';
+import { disputeController } from '../controllers/dispute.controller.js';
 
 const router = Router();
 
@@ -43,6 +45,10 @@ router.post('/:id/cod/confirm', validate(confirmCodOtpSchema), (req, res, next) 
 
 router.post('/:id/review', validate(createReviewSchema), (req, res, next) =>
   orderController.createReview(req, res).catch(next)
+);
+
+router.post('/:id/dispute', validate(openDisputeSchema), (req, res, next) =>
+  disputeController.open(req, res).catch(next)
 );
 
 export default router;

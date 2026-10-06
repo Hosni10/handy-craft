@@ -10,7 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@craftsouq/shared': path.resolve(__dirname, '../../packages/shared/src/index.ts'),
+      '@handycraft/shared': path.resolve(__dirname, '../../packages/shared/src/index.ts'),
     },
   },
   server: {

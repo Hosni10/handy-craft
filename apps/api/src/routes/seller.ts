@@ -10,7 +10,7 @@ import {
   storeVerificationSchema,
   sellerOrderStatusSchema,
   createWithdrawalSchema,
-} from '@craftsouq/shared';
+} from '@handycraft/shared';
 import { sellerController } from '../controllers/seller.controller.js';
 
 const router = Router();

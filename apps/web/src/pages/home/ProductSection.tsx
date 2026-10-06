@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { ProductCard, ProductCardSkeleton } from './ProductCard';
 import { Button } from '@/components/ui/button';
-import type { Product } from '@craftsouq/shared';
+import type { Product } from '@handycraft/shared';
 
 interface ProductSectionProps {
   title: string;

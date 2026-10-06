@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
-import type { User } from '@craftsouq/shared';
+import type { User } from '@handycraft/shared';
 
 interface VerifyOtpResponse {
   user: User;

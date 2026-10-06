@@ -7,8 +7,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { ImageGallery } from './ImageGallery';
 import { ArtisanCard } from './ArtisanCard';
+import { CustomOrderForm } from './CustomOrderForm';
 import { useProduct } from '@/hooks/useProducts';
-import { formatEGP } from '@craftsouq/shared';
+import { formatEGP } from '@handycraft/shared';
 import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
 
@@ -37,6 +38,7 @@ export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [addedMsg, setAddedMsg] = useState(false);
+  const [customOpen, setCustomOpen] = useState(false);
   const addLine = useCartStore((s) => s.addLine);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { data: product, isLoading, isError } = useProduct(id ?? '');
@@ -192,11 +194,24 @@ export function ProductDetailPage() {
               </p>
             )}
 
-            {product.madeToOrder && (
-              <Button variant="outline" className="w-full gap-2 h-12 text-base">
+            {product.madeToOrder && !customOpen && (
+              <Button
+                variant="outline"
+                className="w-full gap-2 h-12 text-base"
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    navigate('/auth/login', { state: { from: `/products/${product.id}` } });
+                    return;
+                  }
+                  setCustomOpen(true);
+                }}
+              >
                 <Paintbrush className="h-5 w-5" />
                 طلب تخصيص
               </Button>
+            )}
+            {customOpen && (
+              <CustomOrderForm productId={product.id} onClose={() => setCustomOpen(false)} />
             )}
           </div>
 

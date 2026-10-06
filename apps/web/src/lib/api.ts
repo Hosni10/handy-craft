@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@craftsouq/shared';
+import type { ApiResponse } from '@handycraft/shared';
 
 const BASE = '/api';
 

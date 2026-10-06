@@ -14,7 +14,7 @@ import {
   useSellerUpload,
 } from '@/hooks/useSeller';
 import { useAuthStore } from '@/store/auth.store';
-import { EGYPTIAN_GOVERNORATES } from '@craftsouq/shared';
+import { EGYPTIAN_GOVERNORATES } from '@handycraft/shared';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ApiError } from '@/lib/api';
 import { mediaUrl } from '@/lib/media';
@@ -235,6 +235,13 @@ export function SellerOnboardingPage() {
             إرسال للمراجعة
           </Button>
         </form>
+      )}
+
+      {badge === 'rejected' && (
+        <p className="text-sm text-destructive mt-4 rounded-lg border border-destructive/30 p-3">
+          تم رفض طلب التوثيق السابق
+          {store?.latestVerification?.reviewNote ? `: ${store.latestVerification.reviewNote}` : ''} — يمكنك رفع صور جديدة.
+        </p>
       )}
 
       {store && badge !== 'verified' && (

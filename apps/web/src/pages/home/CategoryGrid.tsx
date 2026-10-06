@@ -2,26 +2,14 @@ import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
-// Fallback seed categories used when API is not yet connected
-const FALLBACK_CATEGORIES = [
-  { id: 'c1', nameAr: 'سيراميك وخزف', image: 'https://picsum.photos/seed/10/300/300' },
-  { id: 'c2', nameAr: 'كروشيه وتريكو', image: 'https://picsum.photos/seed/20/300/300' },
-  { id: 'c3', nameAr: 'خشب', image: 'https://picsum.photos/seed/30/300/300' },
-  { id: 'c4', nameAr: 'جلد طبيعي', image: 'https://picsum.photos/seed/40/300/300' },
-  { id: 'c5', nameAr: 'نحاس ومعادن', image: 'https://picsum.photos/seed/50/300/300' },
-  { id: 'c6', nameAr: 'تطريز وأقمشة', image: 'https://picsum.photos/seed/60/300/300' },
-  { id: 'c7', nameAr: 'شموع', image: 'https://picsum.photos/seed/70/300/300' },
-  { id: 'c8', nameAr: 'إكسسوارات', image: 'https://picsum.photos/seed/80/300/300' },
-  { id: 'c9', nameAr: 'فنون', image: 'https://picsum.photos/seed/90/300/300' },
-];
-
 interface CategoryGridProps {
   categories?: { id: string; nameAr: string; image?: string | null }[];
   isLoading?: boolean;
 }
 
 export function CategoryGrid({ categories, isLoading = false }: CategoryGridProps) {
-  const items = (categories && categories.length > 0) ? categories : FALLBACK_CATEGORIES;
+  const items = categories ?? [];
+  if (!isLoading && items.length === 0) return null;
 
   return (
     <section className="container mx-auto px-4 py-10">

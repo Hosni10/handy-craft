@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { productRepository } from '../repositories/product.repository.js';
-import { productFilterSchema } from '@craftsouq/shared';
+import { productFilterSchema } from '@handycraft/shared';
 import { ok } from '../lib/response.js';
 import { AppError } from '../lib/AppError.js';
 

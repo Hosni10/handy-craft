@@ -1,11 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Package, ShoppingBag, Wallet, Store } from 'lucide-react';
+import { Package, ShoppingBag, Wallet, Store, Paintbrush, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const LINKS = [
   { to: '/seller/onboarding', label: 'متجري', icon: Store },
   { to: '/seller/products', label: 'المنتجات', icon: ShoppingBag },
   { to: '/seller/orders', label: 'الطلبات', icon: Package },
+  { to: '/seller/custom-orders', label: 'التخصيص', icon: Paintbrush },
+  { to: '/seller/disputes', label: 'النزاعات', icon: ShieldAlert },
   { to: '/seller/earnings', label: 'الأرباح', icon: Wallet },
 ];
 

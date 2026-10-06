@@ -1,5 +1,5 @@
 You are a senior full-stack architect and product engineer. Build a production-grade, 
-marketplace web application called "CraftSouq" — an Etsy-style marketplace EXCLUSIVELY 
+marketplace web application called "Handy Craft" — an Etsy-style marketplace EXCLUSIVELY 
 for Egyptian handmade artisans ("Handmade-only" is our core identity).
 
 # BUSINESS CONTEXT

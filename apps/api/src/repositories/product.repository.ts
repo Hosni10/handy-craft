@@ -1,5 +1,5 @@
 import { prisma } from '../lib/prisma.js';
-import type { ProductFilterInput } from '@craftsouq/shared';
+import type { ProductFilterInput } from '@handycraft/shared';
 
 // Extended filter for store-specific listing
 type ExtendedFilter = ProductFilterInput & { storeId?: string };
@@ -123,7 +123,7 @@ export const productRepository = {
     return Promise.all([
       prisma.product.findMany({
         where: { storeId },
-        select: productWithRelations,
+        select: { ...productWithRelations, rejectionReason: true },
         orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,

@@ -23,6 +23,10 @@ export const config = {
 
   // Business rules
   commissionPct: Number(process.env.COMMISSION_PCT ?? 10),
+  /** Buyers may open a dispute within this many hours after delivery */
+  disputeWindowHours: Number(process.env.DISPUTE_WINDOW_HOURS ?? 48),
+  /** Share of a custom-order quote paid upfront as a deposit */
+  customOrderDepositPct: Number(process.env.CUSTOM_ORDER_DEPOSIT_PCT ?? 30),
 
   /**
    * Flat shipping fees per governorate zone (in EGP).

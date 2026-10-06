@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SellerLayout } from '@/components/seller/SellerLayout';
 import { useSellerEarnings, useCreateWithdrawal, useSellerWithdrawals } from '@/hooks/useSeller';
-import { formatEGP } from '@craftsouq/shared';
+import { formatEGP } from '@handycraft/shared';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ApiError } from '@/lib/api';
 

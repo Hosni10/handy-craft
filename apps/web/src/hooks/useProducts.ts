@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import type { PaginatedResult, Product, Category } from '@craftsouq/shared';
+import type { PaginatedResult, Product, Category, Banner, Store } from '@handycraft/shared';
 
 interface ProductFilter {
   q?: string;
@@ -73,6 +73,22 @@ export function useVerifiedStores() {
   return useQuery({
     queryKey: ['stores', 'verified'],
     queryFn: () => api.get<unknown[]>('/stores/verified'),
+  });
+}
+
+export function useStores(governorate?: string) {
+  return useQuery({
+    queryKey: ['stores', 'list', governorate ?? 'all'],
+    queryFn: () =>
+      api.get<Store[]>(`/stores${governorate ? `?governorate=${encodeURIComponent(governorate)}` : ''}`),
+  });
+}
+
+export function useBanners() {
+  return useQuery({
+    queryKey: ['banners'],
+    queryFn: () => api.get<Banner[]>('/banners'),
+    staleTime: 5 * 60 * 1000,
   });
 }
 

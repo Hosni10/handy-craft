@@ -1,5 +1,5 @@
 /**
- * CraftSouq Database Seed
+ * Handy Craft Database Seed
  *
  * Populates the database with:
  *  - 1 admin user  (phone: 01000000000, dev OTP: 1234)
@@ -398,7 +398,7 @@ async function main() {
     });
     sellerIds.push(seller.id);
 
-    const storeSlug = slugify(s.store.name);
+    const storeSlug = slugify(s.store.name) || `store-${s.phone}`;
     let store = await prisma.store.findFirst({ where: { ownerId: seller.id } });
     if (!store) {
       store = await prisma.store.create({
@@ -512,6 +512,7 @@ async function main() {
           totalEgp: 385,
           addressSnapshot: address,
           notes: 'يرجى التغليف بعناية',
+          deliveredAt: new Date(),
           items: {
             create: {
               productId: productForOrder1,
@@ -622,9 +623,9 @@ async function main() {
   if (bannerCount === 0) {
     await prisma.banner.createMany({
       data: [
-        { title: 'تسوق المنتجات المصرية اليدوية', image: picsum(500, 1200, 400), position: 1, active: true },
-        { title: 'حرف أصيلة من قلب مصر', image: picsum(501, 1200, 400), position: 2, active: true },
-        { title: 'ادعم الحرفيين المحليين', image: picsum(502, 1200, 400), position: 3, active: true },
+        { title: 'تسوق المنتجات المصرية اليدوية', image: picsum(500, 1200, 400), link: '/search', position: 1, active: true },
+        { title: 'حرف أصيلة من قلب مصر', image: picsum(501, 1200, 400), link: '/search', position: 2, active: true },
+        { title: 'ادعم الحرفيين المحليين', image: picsum(502, 1200, 400), link: '/stores', position: 3, active: true },
       ],
     });
   }

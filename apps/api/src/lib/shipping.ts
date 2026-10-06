@@ -2,7 +2,7 @@ import { config } from '../config/index.js';
 import {
   getShippingZoneForGovernorate,
   type ShippingZone,
-} from '@craftsouq/shared';
+} from '@handycraft/shared';
 
 export function resolveShippingFeeEgp(governorate: string): { zone: ShippingZone; shippingFeeEgp: number } {
   const zone = getShippingZoneForGovernorate(governorate);

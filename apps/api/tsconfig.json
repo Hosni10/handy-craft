@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "paths": {
-      "@craftsouq/shared": ["../../packages/shared/src/index.ts"]
+      "@handycraft/shared": ["../../packages/shared/src/index.ts"]
     }
   },
   "include": ["src"],

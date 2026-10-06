@@ -10,8 +10,8 @@ import {
   useRequestPickup,
   usePrintLabel,
 } from '@/hooks/useSeller';
-import { formatEGP } from '@craftsouq/shared';
-import type { OrderStatus, SellerOrderRow, SellerOrderStatusInput } from '@craftsouq/shared';
+import { formatEGP } from '@handycraft/shared';
+import type { OrderStatus, SellerOrderRow, SellerOrderStatusInput } from '@handycraft/shared';
 import { cn } from '@/lib/utils';
 import { ApiError } from '@/lib/api';
 
@@ -38,7 +38,7 @@ function printLabelWindow(label: Awaited<ReturnType<ReturnType<typeof usePrintLa
   const html = `<!DOCTYPE html><html dir="rtl"><head><meta charset="utf-8"><title>ملصق ${label.orderNumber}</title>
   <style>body{font-family:sans-serif;padding:24px} .box{border:2px dashed #333;padding:16px;max-width:360px}</style></head>
   <body onload="window.print()"><div class="box">
-  <h2>Bosta — CraftSouq</h2>
+  <h2>Bosta — Handy Craft</h2>
   <p><strong>من:</strong> ${label.storeName}</p>
   <p><strong>إلى:</strong> ${label.buyerName}</p>
   <p>${label.addressLine}</p>

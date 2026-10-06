@@ -81,7 +81,7 @@ export const useCartStore = create<CartState>()(
         return groups;
       },
     }),
-    { name: 'craftsouq-cart' }
+    { name: 'handycraft-cart' }
   )
 );
 

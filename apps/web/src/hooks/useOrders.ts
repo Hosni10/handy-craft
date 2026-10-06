@@ -9,7 +9,7 @@ import type {
   Review,
   ConfirmCodOtpInput,
   CreateReviewInput,
-} from '@craftsouq/shared';
+} from '@handycraft/shared';
 
 type OrderListItem = OrderDetail;
 

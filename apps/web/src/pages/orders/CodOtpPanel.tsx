@@ -3,7 +3,7 @@ import { MessageCircle, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useConfirmCodOtp, useResendCodOtp } from '@/hooks/useOrders';
-import type { CodOtpInfo } from '@craftsouq/shared';
+import type { CodOtpInfo } from '@handycraft/shared';
 import { ApiError } from '@/lib/api';
 
 interface Props {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Star, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCreateReview } from '@/hooks/useOrders';
-import type { Review } from '@craftsouq/shared';
+import type { Review } from '@handycraft/shared';
 import { ApiError } from '@/lib/api';
 import { cn } from '@/lib/utils';
 

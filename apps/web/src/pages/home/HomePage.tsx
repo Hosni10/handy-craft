@@ -4,7 +4,7 @@ import { ProductSection } from './ProductSection';
 import { VerifiedArtisansSection, type VerifiedArtisansSectionProps } from './VerifiedArtisansSection';
 import { Separator } from '@/components/ui/separator';
 import { useNewArrivals, useReadyToShip, useVerifiedStores, useCategories } from '@/hooks/useProducts';
-import type { Product } from '@craftsouq/shared';
+import type { Product } from '@handycraft/shared';
 
 export function HomePage() {
   const { data: newArrivals = [], isLoading: loadingNew } = useNewArrivals();

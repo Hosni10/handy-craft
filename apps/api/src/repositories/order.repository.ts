@@ -14,10 +14,12 @@ const orderDetailSelect = {
   totalEgp: true,
   addressSnapshot: true,
   notes: true,
+  deliveredAt: true,
   createdAt: true,
   store: {
     select: { id: true, name: true, slug: true, logo: true },
   },
+  dispute: { select: { id: true, status: true } },
   items: {
     select: {
       id: true,

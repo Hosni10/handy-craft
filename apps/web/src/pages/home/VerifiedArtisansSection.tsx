@@ -11,21 +11,14 @@ interface Store {
   ratingCount: number;
 }
 
-// Placeholder stores used when API isn't seeded yet
-const PLACEHOLDER_STORES: Store[] = [
-  { id: 's1', name: 'ورشة نور للسيراميك', logo: 'https://picsum.photos/seed/s1/100/100', governorate: 'القاهرة', ratingAvg: 4.8, ratingCount: 42 },
-  { id: 's2', name: 'بيت الكروشيه', logo: 'https://picsum.photos/seed/s2/100/100', governorate: 'الإسكندرية', ratingAvg: 4.6, ratingCount: 28 },
-  { id: 's3', name: 'حرف النحاس الفيومية', logo: 'https://picsum.photos/seed/s3/100/100', governorate: 'الفيوم', ratingAvg: 4.9, ratingCount: 61 },
-  { id: 's4', name: 'نسيج الأقصر', logo: 'https://picsum.photos/seed/s4/100/100', governorate: 'الأقصر', ratingAvg: 4.7, ratingCount: 35 },
-];
-
 export interface VerifiedArtisansSectionProps {
   stores?: Store[];
   isLoading?: boolean;
 }
 
 export function VerifiedArtisansSection({ stores, isLoading = false }: VerifiedArtisansSectionProps) {
-  const items = (stores && stores.length > 0) ? stores : PLACEHOLDER_STORES;
+  const items = stores ?? [];
+  if (!isLoading && items.length === 0) return null;
 
   return (
     <section className="bg-sand-50 py-10">

@@ -3,8 +3,8 @@ import { Truck, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatEGP } from '@craftsouq/shared';
-import type { Product } from '@craftsouq/shared';
+import { formatEGP } from '@handycraft/shared';
+import type { Product } from '@handycraft/shared';
 
 interface ProductCardProps {
   product: Product;

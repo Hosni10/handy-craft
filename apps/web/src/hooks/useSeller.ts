@@ -15,7 +15,7 @@ import type {
   User,
   WithdrawalRow,
   PrintLabelResult,
-} from '@craftsouq/shared';
+} from '@handycraft/shared';
 
 export function useSellerDashboard() {
   return useQuery({

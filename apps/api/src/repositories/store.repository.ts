@@ -34,6 +34,22 @@ export const storeRepository = {
     });
   },
 
+  /** Public directory: stores with at least one active product, verified first */
+  async findPublic(governorate?: string) {
+    const stores = await prisma.store.findMany({
+      where: {
+        products: { some: { status: 'active' } },
+        ...(governorate ? { governorate } : {}),
+      },
+      select: storePublicSelect,
+      orderBy: { ratingAvg: 'desc' },
+      take: 100,
+    });
+    return stores.sort(
+      (a, b) => Number(b.badgeStatus === 'verified') - Number(a.badgeStatus === 'verified')
+    );
+  },
+
   findByOwnerId(ownerId: string) {
     return prisma.store.findUnique({
       where: { ownerId },
@@ -48,6 +64,7 @@ export const storeRepository = {
             status: true,
             mediaUrls: true,
             note: true,
+            reviewNote: true,
             createdAt: true,
           },
         },

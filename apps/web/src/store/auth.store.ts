@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User } from '@craftsouq/shared';
+import type { User } from '@handycraft/shared';
 
 interface AuthState {
   user: User | null;
@@ -32,7 +32,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'craftsouq-auth',
+      name: 'handycraft-auth',
       // Only persist user info — access token lives in httpOnly cookie, this is UI state
       partialize: (s) => ({ user: s.user, isAuthenticated: s.isAuthenticated }),
     }

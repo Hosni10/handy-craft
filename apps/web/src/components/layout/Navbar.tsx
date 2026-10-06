@@ -31,7 +31,7 @@ export function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-bold text-xl text-terracotta-500 shrink-0">
           <Store className="h-6 w-6" />
-          <span className="hidden sm:inline">كرافت سوق</span>
+          <span className="hidden sm:inline">هاندي كرافت</span>
         </Link>
 
         {/* Search bar */}

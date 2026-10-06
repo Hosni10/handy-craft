@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/index.js';
 import { AppError } from '../lib/AppError.js';
-import type { UserRole } from '@craftsouq/shared';
+import type { UserRole } from '@handycraft/shared';
 
 export interface JwtPayload {
   sub: string;   // user id

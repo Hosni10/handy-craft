@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { useCartStore, cartSubtotal } from '@/store/cart.store';
-import { formatEGP } from '@craftsouq/shared';
+import { formatEGP } from '@handycraft/shared';
 
 export function CartPage() {
   const navigate = useNavigate();

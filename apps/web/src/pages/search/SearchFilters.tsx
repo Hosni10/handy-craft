@@ -1,10 +1,10 @@
-import { EGYPTIAN_GOVERNORATES } from '@craftsouq/shared';
+import { EGYPTIAN_GOVERNORATES } from '@handycraft/shared';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
-import { formatEGP } from '@craftsouq/shared';
-import type { Category } from '@craftsouq/shared';
+import { formatEGP } from '@handycraft/shared';
+import type { Category } from '@handycraft/shared';
 
 export interface FilterState {
   categoryId: string;

@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import type { ApiResponse } from '@craftsouq/shared';
+import type { ApiResponse } from '@handycraft/shared';
 
 /** Send a successful JSON response */
 export function ok<T>(res: Response, data: T, status = 200): void {

@@ -13,8 +13,9 @@ import { useOrder } from '@/hooks/useOrders';
 import { OrderTrackingTimeline } from './OrderTrackingTimeline';
 import { CodOtpPanel } from './CodOtpPanel';
 import { ReviewForm } from './ReviewForm';
-import { formatEGP } from '@craftsouq/shared';
-import type { OrderStatus } from '@craftsouq/shared';
+import { DisputePanel } from './DisputePanel';
+import { formatEGP } from '@handycraft/shared';
+import type { OrderStatus } from '@handycraft/shared';
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   new: 'جديد',
@@ -179,6 +180,8 @@ export function OrderDetailPage() {
           existingReview={order.review}
           canReview={order.canReview}
         />
+
+        <DisputePanel order={order} />
       </div>
     </div>
   );

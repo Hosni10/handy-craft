@@ -15,7 +15,7 @@ import type {
   CreateWithdrawalInput,
   SellerDashboard,
   PrintLabelResult,
-} from '@craftsouq/shared';
+} from '@handycraft/shared';
 import type { OrderStatus, User, Prisma } from '@prisma/client';
 
 function slugify(name: string): string {
@@ -123,6 +123,7 @@ function mapStoreProfile(store: NonNullable<Awaited<ReturnType<typeof storeRepos
           status: latest.status,
           mediaUrls: latest.mediaUrls,
           note: latest.note,
+          reviewNote: latest.reviewNote,
           createdAt: latest.createdAt.toISOString(),
         }
       : null,
@@ -326,7 +327,10 @@ export const sellerService = {
 
     await prisma.order.update({
       where: { id: orderId },
-      data: { status: input.status },
+      data: {
+        status: input.status,
+        ...(input.status === 'delivered' ? { deliveredAt: new Date() } : {}),
+      },
     });
 
     if (input.status === 'delivered') {

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authController } from '../controllers/auth.controller.js';
 import { authenticate } from '../middlewares/auth.js';
 import { validate } from '../middlewares/validate.js';
-import { sendOtpSchema, verifyOtpSchema } from '@craftsouq/shared';
+import { sendOtpSchema, verifyOtpSchema } from '@handycraft/shared';
 
 const router = Router();
 

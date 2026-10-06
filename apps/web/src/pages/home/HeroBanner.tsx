@@ -3,8 +3,11 @@ import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { useBanners } from '@/hooks/useProducts';
+import { mediaUrl } from '@/lib/media';
 
-const SLIDES = [
+/** Shown until an admin publishes banners from the CMS */
+const DEFAULT_SLIDES = [
   {
     id: 1,
     title: 'تسوق المنتجات اليدوية المصرية',
@@ -18,7 +21,7 @@ const SLIDES = [
     title: 'حرف أصيلة من قلب مصر',
     subtitle: 'سيراميك، نحاس، تطريز، كروشيه — كل قطعة تحكي قصة',
     cta: 'استكشف الحرف',
-    href: '/search?categoryId=ceramics',
+    href: '/search',
     image: 'https://picsum.photos/seed/501/1200/500',
   },
   {
@@ -33,9 +36,21 @@ const SLIDES = [
 
 export function HeroBanner() {
   const [active, setActive] = useState(0);
+  const { data: banners } = useBanners();
+  const SLIDES = banners?.length
+    ? banners.map((b) => ({
+        id: b.id,
+        title: b.title,
+        subtitle: '',
+        cta: 'اكتشف الآن',
+        href: b.link ?? '/search',
+        image: mediaUrl(b.image),
+      }))
+    : DEFAULT_SLIDES;
+  const count = SLIDES.length;
 
-  const next = useCallback(() => setActive((a) => (a + 1) % SLIDES.length), []);
-  const prev = useCallback(() => setActive((a) => (a - 1 + SLIDES.length) % SLIDES.length), []);
+  const next = useCallback(() => setActive((a) => (a + 1) % count), [count]);
+  const prev = useCallback(() => setActive((a) => (a - 1 + count) % count), [count]);
 
   // Auto-advance every 5 s
   useEffect(() => {
@@ -50,7 +65,7 @@ export function HeroBanner() {
           key={slide.id}
           className={cn(
             'absolute inset-0 transition-opacity duration-700',
-            i === active ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            i === active % count ? 'opacity-100' : 'opacity-0 pointer-events-none'
           )}
         >
           <img
@@ -67,9 +82,11 @@ export function HeroBanner() {
             <h1 className="text-2xl sm:text-4xl font-bold text-white leading-snug mb-3">
               {slide.title}
             </h1>
-            <p className="text-sm sm:text-base text-sand-100 mb-6 leading-relaxed">
-              {slide.subtitle}
-            </p>
+            {slide.subtitle && (
+              <p className="text-sm sm:text-base text-sand-100 mb-6 leading-relaxed">
+                {slide.subtitle}
+              </p>
+            )}
             <Button asChild size="lg" className="w-fit bg-terracotta-500 hover:bg-terracotta-600">
               <Link to={slide.href}>{slide.cta}</Link>
             </Button>
@@ -101,7 +118,7 @@ export function HeroBanner() {
             onClick={() => setActive(i)}
             className={cn(
               'h-2 rounded-full transition-all duration-300',
-              i === active ? 'w-6 bg-white' : 'w-2 bg-white/50'
+              i === active % count ? 'w-6 bg-white' : 'w-2 bg-white/50'
             )}
             aria-label={`الشريحة ${i + 1}`}
           />

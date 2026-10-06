@@ -1,8 +1,8 @@
 {
-  "name": "craftsouq",
+  "name": "handy-craft",
   "private": true,
   "version": "1.0.0",
-  "description": "CraftSouq — Egyptian handmade artisan marketplace",
+  "description": "Handy Craft — Egyptian handmade artisan marketplace",
   "workspaces": [
     "apps/*",
     "packages/*"

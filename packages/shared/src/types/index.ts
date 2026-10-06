@@ -89,6 +89,7 @@ export interface Product {
   images: string[];
   videoUrl?: string | null;
   status: ProductStatus;
+  rejectionReason?: string | null;
   featured: boolean;
   createdAt: string;
   store?: Store;
@@ -164,6 +165,9 @@ export interface OrderDetail extends Order {
   codOtp?: CodOtpInfo | null;
   review?: Review | null;
   canReview: boolean;
+  deliveredAt?: string | null;
+  canDispute: boolean;
+  dispute?: { id: string; status: DisputeStatus } | null;
 }
 
 export interface CreateOrderResult {
@@ -196,6 +200,7 @@ export interface SellerStoreProfile {
     status: string;
     mediaUrls: string[];
     note?: string | null;
+    reviewNote?: string | null;
     createdAt: string;
   } | null;
 }
@@ -262,6 +267,148 @@ export interface PrintLabelResult {
   buyerName: string;
   addressLine: string;
   codAmount: number;
+}
+
+export interface CustomOrderRow {
+  id: string;
+  status: CustomOrderStatus;
+  details: string;
+  quotedPrice?: number | null;
+  quotedDays?: number | null;
+  sellerNote?: string | null;
+  depositPct: number;
+  depositPaid: boolean;
+  /** quotedPrice × depositPct, null until quoted */
+  depositEgp?: number | null;
+  createdAt: string;
+  product: Pick<Product, 'id' | 'name' | 'images'>;
+  store: Pick<Store, 'id' | 'name'>;
+  buyer: Pick<User, 'id' | 'name'>;
+}
+
+export interface AcceptCustomOrderResult {
+  customOrder: CustomOrderRow;
+  paymentIntent: { paymentKey: string; iframeUrl: string };
+}
+
+export interface DisputeSummary {
+  id: string;
+  orderId: string;
+  orderNumber: string;
+  status: DisputeStatus;
+  reason: string;
+  evidence: string[];
+  resolutionNote?: string | null;
+  createdAt: string;
+  resolvedAt?: string | null;
+  storeName: string;
+  buyerName: string;
+  orderTotalEgp: number;
+}
+
+export interface DisputeMessageRow {
+  id: string;
+  body: string;
+  images: string[];
+  createdAt: string;
+  author: Pick<User, 'id' | 'name' | 'role'>;
+}
+
+export interface DisputeDetail extends DisputeSummary {
+  messages: DisputeMessageRow[];
+}
+
+export interface WalletSummary {
+  balanceEgp: number;
+  transactions: WalletTransactionRow[];
+}
+
+export interface Banner {
+  id: string;
+  title: string;
+  image: string;
+  link?: string | null;
+  position: number;
+  active: boolean;
+}
+
+export interface AdminKpis {
+  gmvTodayEgp: number;
+  ordersToday: number;
+  activeStores: number;
+  pendingApprovals: number;
+  openDisputes: number;
+  pendingWithdrawals: number;
+}
+
+export interface AdminVerificationRow {
+  id: string;
+  status: string;
+  mediaUrls: string[];
+  note?: string | null;
+  reviewNote?: string | null;
+  createdAt: string;
+  store: Pick<Store, 'id' | 'name' | 'governorate' | 'badgeStatus'> & { ownerName: string; ownerPhone: string };
+}
+
+export interface AdminProductRow {
+  id: string;
+  name: string;
+  description: string;
+  priceEgp: number;
+  images: string[];
+  status: ProductStatus;
+  madeToOrder: boolean;
+  rejectionReason?: string | null;
+  createdAt: string;
+  store: Pick<Store, 'id' | 'name'>;
+  category: Pick<Category, 'id' | 'nameAr'>;
+}
+
+export interface AdminStoreRow {
+  id: string;
+  name: string;
+  governorate?: string | null;
+  badgeStatus: BadgeStatus;
+  ratingAvg: number;
+  ratingCount: number;
+  ownerName: string;
+  ownerPhone: string;
+  productsCount: number;
+}
+
+export interface AdminWithdrawalRow extends WithdrawalRow {
+  adminNote?: string | null;
+  sellerName: string;
+  sellerPhone: string;
+  storeName?: string | null;
+}
+
+export interface SettlementWeek {
+  /** ISO date (Saturday) the week starts on */
+  weekStart: string;
+  pendingEgp: number;
+  paidEgp: number;
+  withdrawals: AdminWithdrawalRow[];
+}
+
+export interface SellerBalanceRow {
+  sellerId: string;
+  sellerName: string;
+  storeName?: string | null;
+  balanceEgp: number;
+}
+
+export interface AdminSettlements {
+  weeks: SettlementWeek[];
+  sellerBalances: SellerBalanceRow[];
+}
+
+export interface AdminReports {
+  salesByCategory: { categoryId: string; nameAr: string; totalEgp: number; orders: number }[];
+  salesByGovernorate: { governorate: string; totalEgp: number; orders: number }[];
+  cod: { total: number; refused: number; refusalRatePct: number };
+  topStores: { storeId: string; name: string; gmvEgp: number; orders: number; ratingAvg: number }[];
 }
 
 export interface Notification {

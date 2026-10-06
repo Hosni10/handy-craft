@@ -5,7 +5,7 @@ import { orderRepository } from '../repositories/order.repository.js';
 import { resolveShippingFeeEgp, orderDisplayNumber, serializeOrder } from '../lib/shipping.js';
 import { paymentService } from './payment.service.js';
 import { smsService } from './sms.service.js';
-import type { CreateOrderInput, CreateReviewInput, OrderDetail, CreateOrderResult, ShippingQuote } from '@craftsouq/shared';
+import type { CreateOrderInput, CreateReviewInput, OrderDetail, CreateOrderResult, ShippingQuote } from '@handycraft/shared';
 import type { Prisma } from '@prisma/client';
 
 function generateCodOtpCode(): string {
@@ -13,6 +13,11 @@ function generateCodOtpCode(): string {
     return config.devCodOtp;
   }
   return String(Math.floor(1000 + Math.random() * 9000));
+}
+
+export function isWithinDisputeWindow(deliveredAt: Date | null): boolean {
+  if (!deliveredAt) return false;
+  return Date.now() - deliveredAt.getTime() <= config.disputeWindowHours * 3600 * 1000;
 }
 
 function mapOrderDetail(raw: NonNullable<Awaited<ReturnType<typeof orderRepository.findByIdForBuyer>>>): OrderDetail {
@@ -32,6 +37,9 @@ function mapOrderDetail(raw: NonNullable<Awaited<ReturnType<typeof orderReposito
     store: raw.store ?? undefined,
     orderNumber: orderDisplayNumber(raw.id),
     canReview: raw.status === 'delivered' && !raw.review,
+    deliveredAt: raw.deliveredAt?.toISOString() ?? null,
+    canDispute: raw.status === 'delivered' && !raw.dispute && isWithinDisputeWindow(raw.deliveredAt),
+    dispute: raw.dispute,
     createdAt: raw.createdAt.toISOString(),
     codOtp: raw.codOtp
       ? { confirmed: raw.codOtp.confirmed, expiresAt: raw.codOtp.expiresAt.toISOString() }

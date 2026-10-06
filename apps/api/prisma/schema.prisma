@@ -1,4 +1,4 @@
-// CraftSouq Prisma Schema
+// Handy Craft Prisma Schema
 // Full schema for all domain entities as specified in the product brief.
 
 generator client {
@@ -105,17 +105,18 @@ model User {
   createdAt   DateTime @default(now()) @map("created_at")
 
   // Relations
-  store                Store?
-  orders               Order[]               @relation("BuyerOrders")
-  reviews              Review[]
-  disputes             Dispute[]             @relation("DisputeOpener")
-  customOrderRequests  CustomOrderRequest[]  @relation("BuyerCustomOrders")
-  wallet               Wallet?
-  withdrawals          Withdrawal[]
-  notifications        Notification[]
-  otpCodes             OtpCode[]
-  resolvedDisputes     Dispute[]             @relation("DisputeResolver")
-  processedWithdrawals Withdrawal[]          @relation("WithdrawalProcessor")
+  store                 Store?
+  orders                Order[]              @relation("BuyerOrders")
+  reviews               Review[]
+  disputes              Dispute[]            @relation("DisputeOpener")
+  customOrderRequests   CustomOrderRequest[] @relation("BuyerCustomOrders")
+  wallet                Wallet?
+  withdrawals           Withdrawal[]
+  notifications         Notification[]
+  otpCodes              OtpCode[]
+  resolvedDisputes      Dispute[]            @relation("DisputeResolver")
+  disputeMessages       DisputeMessage[]
+  processedWithdrawals  Withdrawal[]         @relation("WithdrawalProcessor")
   reviewedVerifications StoreVerification[]  @relation("VerificationReviewer")
 
   @@map("users")
@@ -168,17 +169,18 @@ model Store {
 // ─── Store Verifications ─────────────────────────────────────────────────────
 
 model StoreVerification {
-  id          String                  @id @default(uuid())
-  storeId     String                  @map("store_id")
-  mediaUrls   String[]                @map("media_urls")
-  note        String?
-  reviewedBy  String?                 @map("reviewed_by")
-  reviewedAt  DateTime?               @map("reviewed_at")
-  status      StoreVerificationStatus @default(pending)
-  createdAt   DateTime                @default(now()) @map("created_at")
+  id         String                  @id @default(uuid())
+  storeId    String                  @map("store_id")
+  mediaUrls  String[]                @map("media_urls")
+  note       String?
+  reviewNote String?                 @map("review_note")
+  reviewedBy String?                 @map("reviewed_by")
+  reviewedAt DateTime?               @map("reviewed_at")
+  status     StoreVerificationStatus @default(pending)
+  createdAt  DateTime                @default(now()) @map("created_at")
 
-  store      Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  reviewer   User?  @relation("VerificationReviewer", fields: [reviewedBy], references: [id])
+  store    Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  reviewer User? @relation("VerificationReviewer", fields: [reviewedBy], references: [id])
 
   @@index([storeId])
   @@index([status])
@@ -188,9 +190,9 @@ model StoreVerification {
 // ─── Categories ─────────────────────────────────────────────────────────────
 
 model Category {
-  id       String     @id @default(uuid())
-  nameAr   String     @map("name_ar")
-  parentId String?    @map("parent_id")
+  id       String  @id @default(uuid())
+  nameAr   String  @map("name_ar")
+  parentId String? @map("parent_id")
   image    String?
 
   parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
@@ -204,21 +206,22 @@ model Category {
 // ─── Products ───────────────────────────────────────────────────────────────
 
 model Product {
-  id             String        @id @default(uuid())
-  storeId        String        @map("store_id")
-  categoryId     String        @map("category_id")
-  name           String
-  description    String
-  materials      String?
-  priceEgp       Decimal       @map("price_egp") @db.Decimal(12, 2)
-  stockQty       Int           @default(0) @map("stock_qty")
-  madeToOrder    Boolean       @default(false) @map("made_to_order")
-  productionDays Int?          @map("production_days")
-  images         String[]
-  videoUrl       String?       @map("video_url")
-  status         ProductStatus @default(draft)
-  featured       Boolean       @default(false)
-  createdAt      DateTime      @default(now()) @map("created_at")
+  id              String        @id @default(uuid())
+  storeId         String        @map("store_id")
+  categoryId      String        @map("category_id")
+  name            String
+  description     String
+  materials       String?
+  priceEgp        Decimal       @map("price_egp") @db.Decimal(12, 2)
+  stockQty        Int           @default(0) @map("stock_qty")
+  madeToOrder     Boolean       @default(false) @map("made_to_order")
+  productionDays  Int?          @map("production_days")
+  images          String[]
+  videoUrl        String?       @map("video_url")
+  status          ProductStatus @default(draft)
+  rejectionReason String?       @map("rejection_reason")
+  featured        Boolean       @default(false)
+  createdAt       DateTime      @default(now()) @map("created_at")
 
   store           Store                  @relation(fields: [storeId], references: [id], onDelete: Cascade)
   category        Category               @relation(fields: [categoryId], references: [id])
@@ -252,14 +255,17 @@ model ProductCustomization {
 // ─── Custom Order Requests ───────────────────────────────────────────────────
 
 model CustomOrderRequest {
-  id           String            @id @default(uuid())
-  buyerId      String            @map("buyer_id")
-  productId    String            @map("product_id")
-  details      String
-  quotedPrice  Decimal?          @map("quoted_price") @db.Decimal(12, 2)
-  depositPct   Int               @default(30) @map("deposit_pct")
-  status       CustomOrderStatus @default(pending)
-  createdAt    DateTime          @default(now()) @map("created_at")
+  id          String            @id @default(uuid())
+  buyerId     String            @map("buyer_id")
+  productId   String            @map("product_id")
+  details     String
+  quotedPrice Decimal?          @map("quoted_price") @db.Decimal(12, 2)
+  quotedDays  Int?              @map("quoted_days")
+  sellerNote  String?           @map("seller_note")
+  depositPct  Int               @default(30) @map("deposit_pct")
+  depositPaid Boolean           @default(false) @map("deposit_paid")
+  status      CustomOrderStatus @default(pending)
+  createdAt   DateTime          @default(now()) @map("created_at")
 
   buyer   User    @relation("BuyerCustomOrders", fields: [buyerId], references: [id])
   product Product @relation(fields: [productId], references: [id])
@@ -284,6 +290,7 @@ model Order {
   totalEgp        Decimal       @map("total_egp") @db.Decimal(12, 2)
   addressSnapshot Json          @map("address_snapshot")
   notes           String?
+  deliveredAt     DateTime?     @map("delivered_at")
   createdAt       DateTime      @default(now()) @map("created_at")
 
   buyer    User        @relation("BuyerOrders", fields: [buyerId], references: [id])
@@ -358,7 +365,7 @@ model Wallet {
   balanceEgp Decimal  @default(0) @map("balance_egp") @db.Decimal(12, 2)
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  user         User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions WalletTransaction[]
 
   @@map("wallets")
@@ -389,6 +396,7 @@ model Withdrawal {
   method      WithdrawalMethod
   destination String
   status      WithdrawalStatus @default(pending)
+  adminNote   String?          @map("admin_note")
   processedBy String?          @map("processed_by")
   processedAt DateTime?        @map("processed_at")
   createdAt   DateTime         @default(now()) @map("created_at")
@@ -432,14 +440,31 @@ model Dispute {
   status         DisputeStatus @default(open)
   resolutionNote String?       @map("resolution_note")
   resolvedBy     String?       @map("resolved_by")
+  resolvedAt     DateTime?     @map("resolved_at")
   createdAt      DateTime      @default(now()) @map("created_at")
 
-  order    Order @relation(fields: [orderId], references: [id])
-  opener   User  @relation("DisputeOpener", fields: [openedBy], references: [id])
-  resolver User? @relation("DisputeResolver", fields: [resolvedBy], references: [id])
+  order    Order            @relation(fields: [orderId], references: [id])
+  opener   User             @relation("DisputeOpener", fields: [openedBy], references: [id])
+  resolver User?            @relation("DisputeResolver", fields: [resolvedBy], references: [id])
+  messages DisputeMessage[]
 
   @@index([status])
   @@map("disputes")
+}
+
+model DisputeMessage {
+  id        String   @id @default(uuid())
+  disputeId String   @map("dispute_id")
+  authorId  String   @map("author_id")
+  body      String
+  images    String[]
+  createdAt DateTime @default(now()) @map("created_at")
+
+  dispute Dispute @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+  author  User    @relation(fields: [authorId], references: [id])
+
+  @@index([disputeId])
+  @@map("dispute_messages")
 }
 
 // ─── Banners ─────────────────────────────────────────────────────────────────

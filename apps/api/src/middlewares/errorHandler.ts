@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 import { AppError } from '../lib/AppError.js';
-import type { ApiResponse } from '@craftsouq/shared';
+import type { ApiResponse } from '@handycraft/shared';
 
 // Arabic messages for common HTTP errors
 const HTTP_MESSAGES: Record<number, string> = {

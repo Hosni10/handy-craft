@@ -9,7 +9,7 @@ import { SearchFilters } from './SearchFilters';
 import { useProducts, useCategories } from '@/hooks/useProducts';
 import { cn } from '@/lib/utils';
 import type { FilterState } from './SearchFilters';
-import type { Category } from '@craftsouq/shared';
+import type { Category } from '@handycraft/shared';
 
 const DEFAULT_FILTERS: FilterState = {
   categoryId: '',

@@ -50,7 +50,7 @@ app.use(errorHandler);
 
 // ─── Start ──────────────────────────────────────────────────
 app.listen(config.port, () => {
-  console.log(`✅ CraftSouq API running on http://localhost:${config.port}`);
+  console.log(`✅ Handy Craft API running on http://localhost:${config.port}`);
   console.log(`   ENV: ${config.nodeEnv}`);
 });
 

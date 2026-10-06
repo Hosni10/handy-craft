@@ -11,7 +11,7 @@ export function Footer() {
           <div className="space-y-3">
             <Link to="/" className="flex items-center gap-2 font-bold text-lg text-terracotta-500">
               <Store className="h-5 w-5" />
-              <span>كرافت سوق</span>
+              <span>هاندي كرافت</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
               سوق المنتجات اليدوية المصرية الأصيلة. نربط بين الحرفيين المبدعين والمشترين من جميع أنحاء مصر.
@@ -55,7 +55,7 @@ export function Footer() {
         <Separator className="my-8" />
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} كرافت سوق. جميع الحقوق محفوظة.</p>
+          <p>© {new Date().getFullYear()} هاندي كرافت. جميع الحقوق محفوظة.</p>
           <div className="flex gap-4">
             <Link to="/privacy" className="hover:text-primary transition-colors">سياسة الخصوصية</Link>
             <Link to="/terms" className="hover:text-primary transition-colors">شروط الاستخدام</Link>

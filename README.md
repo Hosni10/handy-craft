@@ -1,4 +1,4 @@
-# كرافت سوق | CraftSouq
+# هاندي كرافت | Handy Craft
 
 سوق المنتجات اليدوية المصرية الأصيلة — Etsy-style marketplace for Egyptian handmade artisans.
 
@@ -79,7 +79,7 @@ npm run dev:web   # http://localhost:5173
 ## Project Structure
 
 ```
-craftsouq/
+handy-craft/
 ├── apps/
 │   ├── api/                  # Express API
 │   │   ├── prisma/
@@ -122,11 +122,27 @@ All endpoints return:
 { "success": false, "error": "رسالة خطأ بالعربية" }
 ```
 
-### Health check
+### Endpoints overview
 
-```
-GET /api/health
-```
+| Mount | Who | Purpose |
+|---|---|---|
+| `/api/health` | public | Health check |
+| `/api/auth` | public | `send-otp`, `verify-otp`, `refresh`, `logout`, `me` |
+| `/api/products`, `/api/categories`, `/api/stores`, `/api/banners` | public | Catalog, store directory, store pages, hero banners |
+| `/api/orders` | buyer | Checkout, list/detail, COD OTP, review, `POST /:id/dispute` |
+| `/api/custom-orders` | buyer + seller | Request → seller quotes → buyer accepts (deposit via Paymob stub) → seller completes |
+| `/api/disputes` | buyer + seller + admin | List mine, thread detail, post messages |
+| `/api/wallet` | signed-in | Balance + transactions (refunds, earnings) |
+| `/api/files` | signed-in | Image upload (dispute evidence, banners) |
+| `/api/seller` | seller | Store, verification, products, orders, earnings, withdrawals |
+| `/api/admin` | admin | KPIs, reports, approvals, disputes, settlements, banners, categories, store badges |
+
+### Money flows
+
+- **Order delivered** → seller wallet credited with `subtotal − commission`.
+- **Dispute resolved for buyer** → buyer wallet credited with the order total; the seller's earnings credit for that order is reversed; order `paymentStatus = refunded`.
+- **Withdrawal requested** → amount held (debited) from seller wallet. **Admin marks paid** → done. **Admin rejects** → amount returned to the wallet.
+- **Custom order accepted** → deposit (`CUSTOM_ORDER_DEPOSIT_PCT` of the quote) charged via the Paymob stub.
 
 ---
 
@@ -145,6 +161,8 @@ Business constants live in `apps/api/src/config/index.ts` and are driven by `.en
 |---|---|---|
 | `COMMISSION_PCT` | `10` | Platform commission % per order |
 | `OTP_EXPIRY_SECONDS` | `300` | OTP validity window |
+| `DISPUTE_WINDOW_HOURS` | `48` | How long after delivery a buyer can open a dispute |
+| `CUSTOM_ORDER_DEPOSIT_PCT` | `30` | Deposit share of a custom-order quote |
 | `UPLOAD_DIR` | `uploads` | Local file upload directory |
 
 Shipping fees per zone are in `config.shippingFees` (edit without redeploying by moving to DB in a later phase).
@@ -156,9 +174,21 @@ Shipping fees per zone are in `config.shippingFees` (edit without redeploying by
 | Phase | Status | Description |
 |---|---|---|
 | 1 | ✅ Complete | Scaffold + schema + design system + seed |
-| 2 | Pending | Auth + buyer browse/search/product pages |
-| 3 | Pending | Cart + checkout + orders + COD OTP + tracking + reviews |
-| 4 | Pending | Seller onboarding, product CRUD, orders dashboard, earnings |
-| 5 | Pending | Custom orders + disputes + wallet |
-| 6 | Pending | Admin panel (approvals, settlements, CMS, reports) |
-| 7 | Pending | Polish — skeletons, empty states, responsive QA, final README |
+| 2 | ✅ Complete | Auth + buyer browse/search/product pages |
+| 3 | ✅ Complete | Cart + checkout + orders + COD OTP + tracking + reviews |
+| 4 | ✅ Complete | Seller onboarding, product CRUD, orders dashboard, earnings |
+| 5 | ✅ Complete | Custom orders + disputes + wallet |
+| 6 | ✅ Complete | Admin panel (approvals, settlements, CMS, reports) |
+| 7 | ✅ Complete | Polish — skeletons, empty states, static pages, stores directory, README |
+
+## Main pages
+
+| Area | Routes |
+|---|---|
+| Buyer | `/`, `/search`, `/products/:id`, `/stores`, `/stores/:id`, `/cart`, `/checkout`, `/orders`, `/orders/:id` |
+| Account | `/account`, `/account/wallet`, `/account/custom-orders`, `/account/disputes`, `/disputes/:id` |
+| Seller | `/seller/onboarding`, `/seller/products`, `/seller/orders`, `/seller/custom-orders`, `/seller/disputes`, `/seller/earnings` |
+| Admin | `/admin`, `/admin/approvals`, `/admin/disputes`, `/admin/disputes/:id`, `/admin/settlements`, `/admin/cms` |
+| Static | `/help`, `/shipping-policy`, `/return-policy`, `/contact`, `/privacy`, `/terms` |
+
+> **Windows note:** if `prisma migrate dev` / `prisma generate` fails with `EPERM ... query_engine-windows.dll.node`, stop `npm run dev` first (the running API locks the engine file), then run `npm run db:generate`.

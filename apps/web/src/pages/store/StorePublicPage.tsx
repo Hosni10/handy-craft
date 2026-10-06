@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ProductCard, ProductCardSkeleton } from '@/pages/home/ProductCard';
 import { useStore, useStoreProducts } from '@/hooks/useProducts';
 import { useStoreReviews } from '@/hooks/useOrders';
-import type { Product, Review } from '@craftsouq/shared';
+import type { Product, Review } from '@handycraft/shared';
 
 interface StoreShape {
   id: string;

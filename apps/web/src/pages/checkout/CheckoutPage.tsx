@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { useCartStore, cartSubtotal } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
 import { useCreateOrder, useShippingQuote } from '@/hooks/useOrders';
-import { EGYPTIAN_GOVERNORATES, formatEGP } from '@craftsouq/shared';
+import { EGYPTIAN_GOVERNORATES, formatEGP } from '@handycraft/shared';
 import { ApiError } from '@/lib/api';
 
 export function CheckoutPage() {

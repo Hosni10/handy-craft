@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useOrders } from '@/hooks/useOrders';
-import { formatEGP } from '@craftsouq/shared';
-import type { OrderStatus } from '@craftsouq/shared';
+import { formatEGP } from '@handycraft/shared';
+import type { OrderStatus } from '@handycraft/shared';
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   new: 'جديد',

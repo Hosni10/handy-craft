@@ -1,12 +1,18 @@
 import type { Request, Response } from 'express';
 import { storeRepository } from '../repositories/store.repository.js';
 import { productRepository } from '../repositories/product.repository.js';
-import { productFilterSchema } from '@craftsouq/shared';
+import { productFilterSchema } from '@handycraft/shared';
 import { orderService } from '../services/order.service.js';
 import { ok } from '../lib/response.js';
 import { AppError } from '../lib/AppError.js';
 
 export const storeController = {
+  /** GET /stores?governorate= */
+  async list(req: Request, res: Response): Promise<void> {
+    const governorate = typeof req.query.governorate === 'string' ? req.query.governorate : undefined;
+    ok(res, await storeRepository.findPublic(governorate || undefined));
+  },
+
   /** GET /stores/verified */
   async verified(_req: Request, res: Response): Promise<void> {
     const stores = await storeRepository.findVerified();

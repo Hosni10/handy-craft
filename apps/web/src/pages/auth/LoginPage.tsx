@@ -39,7 +39,7 @@ export function LoginPage() {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 text-2xl font-bold text-terracotta-500">
             <Store className="h-7 w-7" />
-            كرافت سوق
+            هاندي كرافت
           </Link>
           <p className="text-muted-foreground mt-2 text-sm">سوق المنتجات اليدوية المصرية</p>
         </div>

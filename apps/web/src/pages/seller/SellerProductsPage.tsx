@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Pencil, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, AlertCircle, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -10,11 +10,11 @@ import {
   useCreateSellerProduct,
   useUpdateSellerProduct,
   useDeleteSellerProduct,
-  useSellerUpload,
 } from '@/hooks/useSeller';
+import { useFileUpload } from '@/hooks/useDisputes';
 import { useCategories } from '@/hooks/useProducts';
-import { formatEGP } from '@craftsouq/shared';
-import type { Product, ProductStatus } from '@craftsouq/shared';
+import { formatEGP } from '@handycraft/shared';
+import type { Product, ProductStatus } from '@handycraft/shared';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ApiError } from '@/lib/api';
 import { mediaUrl } from '@/lib/media';
@@ -55,24 +55,34 @@ export function SellerProductsPage() {
   const { data: categories } = useCategories();
   const createProduct = useCreateSellerProduct();
   const deleteProduct = useDeleteSellerProduct();
-  const upload = useSellerUpload();
+  const upload = useFileUpload();
 
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const maxImages = 8;
+  const imageCount = form.images.length + pendingFiles.length;
+
   const updateProduct = useUpdateSellerProduct(editId ?? '');
+
+  function resetModal() {
+    setPendingFiles([]);
+    setError(null);
+  }
 
   function startCreate() {
     setEditId(null);
     setForm(emptyForm());
+    resetModal();
     setOpen(true);
-    setError(null);
   }
 
   function startEdit(p: Product) {
     setEditId(p.id);
+    resetModal();
     setForm({
       categoryId: p.categoryId,
       name: p.name,
@@ -85,18 +95,40 @@ export function SellerProductsPage() {
       images: p.images ?? [],
     });
     setOpen(true);
-    setError(null);
   }
 
-  async function handleUpload(files: FileList | null) {
+  function addPendingImages(files: FileList | null) {
     if (!files?.length) return;
-    const result = await upload.mutateAsync(Array.from(files));
-    setForm((f) => ({ ...f, images: [...f.images, ...result.urls].slice(0, 8) }));
+    setError(null);
+    const room = maxImages - imageCount;
+    if (room <= 0) return;
+    setPendingFiles((prev) => [...prev, ...Array.from(files).slice(0, room)]);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    let images = [...form.images];
+    if (pendingFiles.length) {
+      try {
+        const { urls } = await upload.mutateAsync(pendingFiles);
+        if (!urls.length) {
+          setError('فشل رفع الصور — حاول مرة أخرى');
+          return;
+        }
+        images = [...images, ...urls].slice(0, maxImages);
+      } catch (err) {
+        setError(err instanceof ApiError ? err.message : 'فشل رفع الصور');
+        return;
+      }
+    }
+
+    if (images.length === 0) {
+      setError('أضف صورة واحدة على الأقل للمنتج');
+      return;
+    }
+
     const payload = {
       categoryId: form.categoryId,
       name: form.name,
@@ -106,7 +138,7 @@ export function SellerProductsPage() {
       stockQty: Number(form.stockQty),
       madeToOrder: form.madeToOrder,
       productionDays: form.madeToOrder && form.productionDays ? Number(form.productionDays) : null,
-      images: form.images,
+      images,
     };
 
     try {
@@ -115,6 +147,7 @@ export function SellerProductsPage() {
       } else {
         await createProduct.mutateAsync(payload);
       }
+      setPendingFiles([]);
       setOpen(false);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'تعذر حفظ المنتج');
@@ -165,6 +198,9 @@ export function SellerProductsPage() {
               <p className="font-medium text-sm line-clamp-1">{p.name}</p>
               <p className="text-terracotta-600 font-bold text-sm num-ar">{formatEGP(Number(p.priceEgp))}</p>
               <Badge variant="outline" className="text-[10px] mt-1">{STATUS_AR[p.status]}</Badge>
+              {p.status === 'rejected' && p.rejectionReason && (
+                <p className="text-xs text-destructive mt-1 line-clamp-2">سبب الرفض: {p.rejectionReason}</p>
+              )}
             </div>
             <div className="flex gap-1 shrink-0">
               <Button variant="ghost" size="icon" onClick={() => startEdit(p as Product)}>
@@ -217,22 +253,70 @@ export function SellerProductsPage() {
               {form.madeToOrder && (
                 <Input type="number" placeholder="أيام التصنيع" value={form.productionDays} onChange={(e) => setForm((f) => ({ ...f, productionDays: e.target.value }))} />
               )}
-              <label className="block text-xs text-muted-foreground">
-                صور المنتج
-                <input type="file" accept="image/*" multiple className="block mt-1 text-sm" onChange={(e) => handleUpload(e.target.files)} />
-              </label>
-              {form.images.length > 0 && (
-                <div className="flex gap-1 flex-wrap">
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">صور المنتج (صورة واحدة على الأقل)</p>
+                <div className="flex flex-wrap gap-2">
                   {form.images.map((url) => (
-                    <img key={url} src={mediaUrl(url)} alt="" className="h-14 w-14 rounded object-cover" />
+                    <div key={url} className="relative">
+                      <img src={mediaUrl(url)} alt="" className="h-16 w-16 rounded-lg object-cover border" />
+                      <button
+                        type="button"
+                        aria-label="حذف الصورة"
+                        onClick={() => setForm((f) => ({ ...f, images: f.images.filter((u) => u !== url) }))}
+                        className="absolute -top-1.5 -left-1.5 rounded-full bg-background border p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
                   ))}
+                  {pendingFiles.map((file, i) => (
+                    <div key={`${file.name}-${i}`} className="relative">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt=""
+                        className="h-16 w-16 rounded-lg object-cover border"
+                      />
+                      <button
+                        type="button"
+                        aria-label="حذف الصورة"
+                        onClick={() => setPendingFiles((prev) => prev.filter((_, j) => j !== i))}
+                        className="absolute -top-1.5 -left-1.5 rounded-full bg-background border p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {imageCount < maxImages && (
+                    <label className="h-16 w-16 flex flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed cursor-pointer hover:bg-muted/40 text-muted-foreground">
+                      <Upload className="h-4 w-4" />
+                      <span className="text-[10px]">إرفاق</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => {
+                          addPendingImages(e.target.files);
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                  )}
                 </div>
-              )}
+              </div>
               {error && <p className="text-xs text-destructive">{error}</p>}
               <div className="flex gap-2 pt-2">
-                <Button type="button" variant="outline" className="flex-1" onClick={() => setOpen(false)}>إلغاء</Button>
-                <Button type="submit" className="flex-1" disabled={createProduct.isPending || updateProduct.isPending || form.images.length === 0}>
-                  {(createProduct.isPending || updateProduct.isPending) ? <Loader2 className="h-4 w-4 animate-spin" /> : 'حفظ'}
+                <Button type="button" variant="outline" className="flex-1" onClick={() => { resetModal(); setOpen(false); }}>
+                  إلغاء
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1"
+                  disabled={createProduct.isPending || updateProduct.isPending || upload.isPending}
+                >
+                  {(createProduct.isPending || updateProduct.isPending || upload.isPending)
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : 'حفظ'}
                 </Button>
               </div>
             </form>

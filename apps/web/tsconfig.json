@@ -13,7 +13,7 @@
     "noEmit": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@craftsouq/shared": ["../../packages/shared/src/index.ts"]
+      "@handycraft/shared": ["../../packages/shared/src/index.ts"]
     }
   },
   "include": ["src"],
