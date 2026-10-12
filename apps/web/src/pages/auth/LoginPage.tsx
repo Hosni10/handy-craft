@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Store, ArrowLeft } from 'lucide-react';
+import { Phone, Store, ArrowLeft, ShoppingBag, Hammer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useSendOtp } from '@/hooks/useAuth';
+import { cn } from '@/lib/utils';
+import { useSendOtp, type AuthRoleChoice } from '@/hooks/useAuth';
 
-/** Step 1 — enter phone number to receive OTP */
+const ROLE_OPTIONS: { value: AuthRoleChoice; label: string; hint: string; icon: typeof Store }[] = [
+  { value: 'BUYER', label: 'مشتري', hint: 'تسوق المنتجات اليدوية', icon: ShoppingBag },
+  { value: 'SELLER', label: 'حرفي (بائع)', hint: 'افتح متجرك وبِع منتجاتك', icon: Hammer },
+];
+
+/** Step 1 — choose account type and enter phone number to receive OTP */
 export function LoginPage() {
+  const [role, setRole] = useState<AuthRoleChoice | null>(null);
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const sendOtp = useSendOtp();
@@ -14,6 +21,11 @@ export function LoginPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+
+    if (!role) {
+      setError('يرجى اختيار نوع الحساب');
+      return;
+    }
 
     // Basic Egyptian mobile validation
     if (!/^01[0125][0-9]{8}$/.test(phone)) {
@@ -24,7 +36,7 @@ export function LoginPage() {
     sendOtp.mutate(phone, {
       onSuccess: () => {
         // Navigate to OTP page with phone in state
-        window.location.href = `/auth/otp?phone=${encodeURIComponent(phone)}`;
+        window.location.href = `/auth/otp?phone=${encodeURIComponent(phone)}&role=${role}`;
       },
       onError: (err: Error) => {
         setError(err.message ?? 'حدث خطأ، يرجى المحاولة مرة أخرى');
@@ -46,13 +58,38 @@ export function LoginPage() {
 
         <div className="bg-white rounded-2xl border shadow-sm p-6 space-y-5">
           <div>
-            <h1 className="text-xl font-bold">تسجيل الدخول</h1>
+            <h1 className="text-xl font-bold">تسجيل الدخول / إنشاء حساب</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              أدخل رقم هاتفك وسنرسل لك رمز التحقق
+              اختر نوع حسابك وأدخل رقم هاتفك وسنرسل لك رمز التحقق
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <span className="text-sm font-medium">نوع الحساب</span>
+              <div className="grid grid-cols-2 gap-3" role="radiogroup">
+                {ROLE_OPTIONS.map(({ value, label, hint, icon: Icon }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    role="radio"
+                    aria-checked={role === value}
+                    onClick={() => { setRole(value); setError(''); }}
+                    className={cn(
+                      'flex flex-col items-center gap-1 rounded-xl border-2 p-3 text-center transition-colors',
+                      role === value
+                        ? 'border-terracotta-400 bg-terracotta-50'
+                        : 'border-border hover:bg-muted'
+                    )}
+                  >
+                    <Icon className={cn('h-6 w-6', role === value ? 'text-terracotta-500' : 'text-muted-foreground')} />
+                    <span className="text-sm font-semibold">{label}</span>
+                    <span className="text-[11px] text-muted-foreground leading-tight">{hint}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="space-y-1.5">
               <label htmlFor="phone" className="text-sm font-medium">رقم الهاتف</label>
               <div className="relative">

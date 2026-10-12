@@ -16,6 +16,8 @@ import { config } from '../config/index.js';
 import { smsService } from './sms.service.js';
 import { userRepository } from '../repositories/user.repository.js';
 import { otpRepository } from '../repositories/otp.repository.js';
+import { storeRepository } from '../repositories/store.repository.js';
+import { sellerService } from './seller.service.js';
 import { AppError } from '../lib/AppError.js';
 import type { JwtPayload } from '../middlewares/auth.js';
 import type { User } from '@prisma/client';
@@ -60,9 +62,13 @@ export const authService = {
     await smsService.sendOtp(phone, otp);
   },
 
-  /** Step 2: verify OTP → return access + refresh tokens */
-  async verifyOtp(phone: string, code: string): Promise<{ accessToken: string; refreshToken: string; user: User }> {
-    const user = await userRepository.findByPhone(phone);
+  /** Step 2: verify OTP → return access + refresh tokens. Choosing SELLER upgrades a BUYER account. */
+  async verifyOtp(
+    phone: string,
+    code: string,
+    role?: 'BUYER' | 'SELLER'
+  ): Promise<{ accessToken: string; refreshToken: string; user: User; hasStore: boolean }> {
+    let user = await userRepository.findByPhone(phone);
     if (!user) {
       throw new AppError('رقم الهاتف غير مسجل. أرسل طلب OTP أولاً.', 404);
     }
@@ -74,9 +80,14 @@ export const authService = {
 
     await otpRepository.markUsed(otpRecord.id);
 
+    if (role === 'SELLER') {
+      user = await sellerService.becomeSeller(user.id);
+    }
+    const hasStore = !!(await storeRepository.findByOwnerId(user.id));
+
     const accessToken = signAccess(user);
     const refreshToken = signRefresh(user);
-    return { accessToken, refreshToken, user };
+    return { accessToken, refreshToken, user, hasStore };
   },
 
   /** Refresh access token using a valid refresh token */

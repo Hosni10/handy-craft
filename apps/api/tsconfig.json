@@ -2,10 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "paths": {
-      "@handycraft/shared": ["../../packages/shared/src/index.ts"]
-    }
+    "rootDir": "./src"
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "references": [{ "path": "../../packages/shared" }]
 }

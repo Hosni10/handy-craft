@@ -11,6 +11,7 @@ export const verifyOtpSchema = z.object({
     .string()
     .regex(/^01[0125][0-9]{8}$/, 'رقم الهاتف غير صحيح'),
   otp: z.string().length(4, 'رمز التحقق يجب أن يكون 4 أرقام'),
+  role: z.enum(['BUYER', 'SELLER']).optional(),
 });
 
 export type SendOtpInput = z.infer<typeof sendOtpSchema>;

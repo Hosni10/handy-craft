@@ -4,8 +4,11 @@ import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import type { User } from '@handycraft/shared';
 
+export type AuthRoleChoice = 'BUYER' | 'SELLER';
+
 interface VerifyOtpResponse {
   user: User;
+  hasStore: boolean;
   accessToken: string;
 }
 
@@ -20,13 +23,13 @@ export function useVerifyOtp() {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: ({ phone, otp }: { phone: string; otp: string }) =>
-      api.post<VerifyOtpResponse>('/auth/verify-otp', { phone, otp }),
-    onSuccess(data) {
+    mutationFn: ({ phone, otp, role }: { phone: string; otp: string; role?: AuthRoleChoice }) =>
+      api.post<VerifyOtpResponse>('/auth/verify-otp', { phone, otp, role }),
+    onSuccess(data, { role }) {
       setAuth(data.user, data.accessToken);
-      // Redirect based on role
+      // Redirect based on the account type chosen at login
       if (data.user.role === 'ADMIN') navigate('/admin');
-      else if (data.user.role === 'SELLER') navigate('/seller/orders');
+      else if (role === 'SELLER') navigate(data.hasStore ? '/seller/orders' : '/seller/onboarding');
       else navigate('/');
     },
   });

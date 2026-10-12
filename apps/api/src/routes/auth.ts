@@ -11,7 +11,7 @@ router.post('/send-otp', validate(sendOtpSchema), (req, res, next) => {
   authController.sendOtp(req, res).catch(next);
 });
 
-router.post('/verify-otp', validate(verifyOtpSchema.extend({ otp: verifyOtpSchema.shape.otp })), (req, res, next) => {
+router.post('/verify-otp', validate(verifyOtpSchema), (req, res, next) => {
   authController.verifyOtp(req, res).catch(next);
 });
 

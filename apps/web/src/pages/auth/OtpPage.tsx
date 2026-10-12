@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Store, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useSendOtp, useVerifyOtp } from '@/hooks/useAuth';
+import { useSendOtp, useVerifyOtp, type AuthRoleChoice } from '@/hooks/useAuth';
 
 const OTP_LENGTH = 4;
 
@@ -11,6 +11,7 @@ const OTP_LENGTH = 4;
 export function OtpPage() {
   const [params] = useSearchParams();
   const phone = params.get('phone') ?? '';
+  const role: AuthRoleChoice = params.get('role') === 'SELLER' ? 'SELLER' : 'BUYER';
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [error, setError] = useState('');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -54,7 +55,7 @@ export function OtpPage() {
 
   function submitOtp(otp: string) {
     setError('');
-    verifyOtp.mutate({ phone, otp }, {
+    verifyOtp.mutate({ phone, otp, role }, {
       onError: (err: Error) => {
         setError(err.message ?? 'رمز التحقق غير صحيح');
         setDigits(Array(OTP_LENGTH).fill(''));

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { authService } from '../services/auth.service.js';
 import { userRepository } from '../repositories/user.repository.js';
-import { ok, created } from '../lib/response.js';
+import { ok } from '../lib/response.js';
 import { AppError } from '../lib/AppError.js';
 
 // Cookie options — httpOnly, sameSite, secure in prod
@@ -21,8 +21,8 @@ export const authController = {
 
   /** POST /auth/verify-otp */
   async verifyOtp(req: Request, res: Response): Promise<void> {
-    const { phone, otp } = req.body as { phone: string; otp: string };
-    const { accessToken, refreshToken, user } = await authService.verifyOtp(phone, otp);
+    const { phone, otp, role } = req.body as { phone: string; otp: string; role?: 'BUYER' | 'SELLER' };
+    const { accessToken, refreshToken, user, hasStore } = await authService.verifyOtp(phone, otp, role);
 
     res.cookie('accessToken', accessToken, { ...COOKIE_OPTS, maxAge: 15 * 60 * 1000 });
     res.cookie('refreshToken', refreshToken, { ...COOKIE_OPTS, maxAge: 30 * 24 * 60 * 60 * 1000 });
@@ -36,6 +36,7 @@ export const authController = {
         governorate: user.governorate,
         avatar: user.avatar,
       },
+      hasStore,
       accessToken, // also return in body for non-cookie clients
     });
   },

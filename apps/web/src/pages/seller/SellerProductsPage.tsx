@@ -102,7 +102,9 @@ export function SellerProductsPage() {
     setError(null);
     const room = maxImages - imageCount;
     if (room <= 0) return;
-    setPendingFiles((prev) => [...prev, ...Array.from(files).slice(0, room)]);
+    // Copy files synchronously — clearing the input in onChange empties the live FileList before React runs setState updaters.
+    const toAdd = Array.from(files).slice(0, room);
+    setPendingFiles((prev) => [...prev, ...toAdd]);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -126,6 +128,11 @@ export function SellerProductsPage() {
 
     if (images.length === 0) {
       setError('أضف صورة واحدة على الأقل للمنتج');
+      return;
+    }
+
+    if (!form.categoryId) {
+      setError('اختر التصنيف');
       return;
     }
 
@@ -224,7 +231,10 @@ export function SellerProductsPage() {
           <div className="bg-background rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 space-y-4 shadow-xl">
             <h2 className="font-bold text-lg">{editId ? 'تعديل منتج' : 'منتج جديد'}</h2>
             <form onSubmit={handleSubmit} className="space-y-3">
-              <Select value={form.categoryId} onValueChange={(v) => setForm((f) => ({ ...f, categoryId: v }))}>
+              <Select
+                value={form.categoryId || undefined}
+                onValueChange={(v) => setForm((f) => ({ ...f, categoryId: v }))}
+              >
                 <SelectTrigger><SelectValue placeholder="التصنيف" /></SelectTrigger>
                 <SelectContent>
                   {flatCategories.map((c) => (

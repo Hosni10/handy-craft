@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const createProductSchema = z.object({
-  categoryId: z.string().uuid(),
+  categoryId: z.string().uuid({ message: 'اختر تصنيفاً صالحاً' }),
   name: z.string().min(3, 'اسم المنتج يجب ألا يقل عن 3 أحرف').max(120),
   description: z.string().min(10, 'الوصف يجب ألا يقل عن 10 أحرف'),
   materials: z.string().optional(),

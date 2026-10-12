@@ -49,9 +49,19 @@ app.use((_req, res) => {
 app.use(errorHandler);
 
 // ─── Start ──────────────────────────────────────────────────
-app.listen(config.port, () => {
+const server = app.listen(config.port, () => {
   console.log(`✅ Handy Craft API running on http://localhost:${config.port}`);
   console.log(`   ENV: ${config.nodeEnv}`);
+});
+
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(
+      `[API] Port ${config.port} is already in use. Stop the other dev server or set PORT to a free port.`
+    );
+    process.exit(1);
+  }
+  throw err;
 });
 
 export default app;
